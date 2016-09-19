@@ -5,22 +5,22 @@ import (
 )
 
 // Talk method start quiz game with user if sent message means "Quiz".
-func Talk(chatroom chan types.Message) {
-	text := <-chatroom
+func Talk(chatroom types.Chatroom) {
+	text := <-chatroom.In
 	if text != "クイズ" {
 		return
 	}
 	qa := oneQA()
 	for _, message := range qa.question {
-		chatroom <- message
+		chatroom.Out <- message
 	}
 
-	text = <-chatroom
+	text = <-chatroom.In
 	if isCorrectAnswer(text, qa) {
-		chatroom <- "なんで知ってるの...?"
+		chatroom.Out <- "なんで知ってるの...?"
 	} else {
-		chatroom <- "やーいやーーいwwwwwwwwwwwwwwwwwww"
-		chatroom <- types.Message("せぃかぃゎ" + qa.answer)
+		chatroom.Out <- "やーいやーーいwwwwwwwwwwwwwwwwwww"
+		chatroom.Out <- types.Message("せぃかぃゎ" + qa.answer)
 	}
 }
 

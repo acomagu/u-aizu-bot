@@ -6,7 +6,7 @@ import (
 	"github.com/acomagu/u-aizu-bot/types"
 )
 
-var topics = []func(chan types.Message){
+var topics = []func(types.Chatroom){
 	quiz.Talk,
 	timetable.Timetable,
 }

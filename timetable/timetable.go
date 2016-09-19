@@ -34,9 +34,9 @@ func rtClass(menber string) [6]string {
 
 	file, err := ioutil.ReadFile("./json/subjects2.json")
 	var datasets []person
-	json_err := json.Unmarshal(file, &datasets)
+	jsonErr := json.Unmarshal(file, &datasets)
 	if err != nil {
-		fmt.Println("Format Error: ", json_err)
+		fmt.Println("Format Error: ", jsonErr)
 	}
 	var T [6]string
 
@@ -74,9 +74,9 @@ func rtClass(menber string) [6]string {
 func chName(code [6]string) [6]string {
 	file, err := ioutil.ReadFile("./json/subjects.json")
 	var datasets []namegetter
-	json_err := json.Unmarshal(file, &datasets)
+	jsonErr := json.Unmarshal(file, &datasets)
 	if err != nil {
-		log.Print("Format Error: ", json_err)
+		log.Print("Format Error: ", jsonErr)
 	}
 
 	for l := range datasets {
@@ -91,11 +91,11 @@ func chName(code [6]string) [6]string {
 }
 
 //Timetable ...
-func Timetable(chatroom chan types.Message) {
-	text := <-chatroom
+func Timetable(chatroom types.Chatroom) {
+	text := <-chatroom.In
 	if (text[0] == 's') || (text[0] == 'm') {
 		m := rtClass(string(text))
 		t := strings.Join(m[:], "\n")
-		chatroom <- types.Message(t)
+		chatroom.Out <- types.Message(t)
 	}
 }
