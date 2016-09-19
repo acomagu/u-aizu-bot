@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/acomagu/u-aizu-bot/types"
-	"fmt"
 )
 
 func talk(chatroom types.Chatroom) {
+	var topicChatrooms = []types.Chatroom{}
 	for _, topic := range topics {
 		topicChatroom := types.Chatroom{
 			In:  make(chan types.Message),
@@ -13,8 +13,9 @@ func talk(chatroom types.Chatroom) {
 		}
 		go loopTopic(topic, topicChatroom)
 		go sendMessageFromTopicChatroom(chatroom, topicChatroom)
-		go chainMessageFromChatroomToTopicChatroom(chatroom, topicChatroom)
+		topicChatrooms = append(topicChatrooms, topicChatroom)
 	}
+	go chainMessageFromChatroomToTopicChatroom(chatroom, topicChatrooms)
 }
 
 func loopTopic(topic func(types.Chatroom), topicChatroom types.Chatroom) {
@@ -23,20 +24,17 @@ func loopTopic(topic func(types.Chatroom), topicChatroom types.Chatroom) {
 	}
 }
 
-func chainMessageFromChatroomToTopicChatroom(chatroom types.Chatroom, topicChatroom types.Chatroom) {
+func chainMessageFromChatroomToTopicChatroom(chatroom types.Chatroom, topicChatrooms []types.Chatroom) {
 	for {
-		// topicChatroom.In <- <-chatroom.In
-		tmp := <-chatroom.In
-		topicChatroom.In <- tmp
-		fmt.Println(tmp)
+		text := <-chatroom.In
+		for _, topicChatroom := range topicChatrooms {
+			topicChatroom.In <- text
+		}
 	}
 }
 
 func sendMessageFromTopicChatroom(chatroom types.Chatroom, topicChatroom types.Chatroom) {
 	for {
-		// chatroom.Out <- <-topicChatroom.Out
-		tmp := <-topicChatroom.Out
-		chatroom.Out <- tmp
-		fmt.Println(tmp)
+		chatroom.Out <- <-topicChatroom.Out
 	}
 }
