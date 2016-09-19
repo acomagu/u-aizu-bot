@@ -1,17 +1,21 @@
-package main
+package quiz
 
 import (
 	"github.com/acomagu/u-aizu-bot/types"
 )
 
-func quiz(chatroom chan types.Message) {
-	<-chatroom
+// Talk method start quiz game with user if sent message means "Quiz".
+func Talk(chatroom chan types.Message) {
+	text := <-chatroom
+	if text != "クイズ" {
+		return
+	}
 	qa := oneQA()
 	for _, message := range qa.question {
 		chatroom <- message
 	}
 
-	text := <-chatroom
+	text = <-chatroom
 	if isCorrectAnswer(text, qa) {
 		chatroom <- "なんで知ってるの...?"
 	} else {
