@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/acomagu/u-aizu-bot/types"
 	"github.com/line/line-bot-sdk-go/linebot"
 	"net/http"
 	"os"
 	"strconv"
-	"github.com/acomagu/u-aizu-bot/types"
 )
 
 var bot *linebot.Client
