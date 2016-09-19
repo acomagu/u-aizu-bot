@@ -10,7 +10,7 @@ func react(text types.Message, userID types.UserID) error {
 	chatroom, ok := chatrooms[userID]
 	if !ok {
 		chatroom = types.Chatroom{}
-		go sendMessageFromChatroom(chatroom.In, userID)
+		go sendMessageFromChatroom(chatroom.Out, userID)
 		go talk(chatroom)
 		chatrooms[userID] = chatroom
 	}
