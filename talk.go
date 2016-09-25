@@ -9,10 +9,9 @@ func talk(chatroom types.Chatroom) {
 	for _, topic := range topics {
 		topicChatroom := types.Chatroom{
 			In:  make(chan types.Message),
-			Out: make(chan types.Message),
+			Out: chatroom.Out,
 		}
 		go loopTopic(topic, topicChatroom)
-		go sendMessageFromTopicChatroom(chatroom, topicChatroom)
 		topicChatrooms = append(topicChatrooms, topicChatroom)
 	}
 	go chainMessageFromChatroomToTopicChatroom(chatroom, topicChatrooms)
@@ -30,11 +29,5 @@ func chainMessageFromChatroomToTopicChatroom(chatroom types.Chatroom, topicChatr
 		for _, topicChatroom := range topicChatrooms {
 			topicChatroom.In <- text
 		}
-	}
-}
-
-func sendMessageFromTopicChatroom(chatroom types.Chatroom, topicChatroom types.Chatroom) {
-	for {
-		chatroom.Out <- <-topicChatroom.Out
 	}
 }
