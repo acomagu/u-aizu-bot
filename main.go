@@ -18,6 +18,7 @@ func main() {
 	bot, err = lineClient()
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	listen()
