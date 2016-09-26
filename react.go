@@ -6,6 +6,7 @@ import (
 
 var chatrooms = make(map[types.UserID]types.Chatroom)
 
+// react is runned synchronously
 func react(text types.Message, userID types.UserID) error {
 	chatroom, ok := chatrooms[userID]
 	if !ok {
