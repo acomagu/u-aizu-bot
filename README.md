@@ -1,9 +1,7 @@
-quizbot
+u-aizu-bot
 ====
 
-This chat bot ask users some questions. This is material source code, you can see the process of writing in movies. The index page:
-
-[https://github.com/acomagu/1607-bot-workshop/blob/master/dist/index.md](https://github.com/acomagu/1607-bot-workshop/blob/master/dist/index.md)
+Get information of your university life, on LINE.
 
 ## Requirement
 - Go
