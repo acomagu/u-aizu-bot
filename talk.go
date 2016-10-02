@@ -30,9 +30,6 @@ func tryTopic(topic func(types.Chatroom)) bool {
 
 func passMessage(chatroom types.Chatroom, topicChatrooms []types.Chatroom) {
 	for {
-		text := <-chatroom.In
-		for _, topicChatroom := range topicChatrooms {
-			topicChatroom.In <- text
-		}
+		topicChatroom.In <- <-chatroom.In
 	}
 }
