@@ -139,8 +139,9 @@ func chName(code [6]string) [6]string {
 }
 
 //Timetable ...
-func Timetable(chatroom types.Chatroom) {
+func Timetable(chatroom types.Chatroom) bool {
 	text := <-chatroom.In
+	ans := false
 	if (text[0] == 's') || (text[0] == 'm') {
 		text2 := string(text)
 		words := strings.Fields(text2)
@@ -149,5 +150,8 @@ func Timetable(chatroom types.Chatroom) {
 		m := serect(words[0], words[1])
 		t := strings.Join(m[:], "\n")
 		chatroom.Out <- types.Message(t)
+		ans = true
+		return ans
 	}
+	return ans
 }
