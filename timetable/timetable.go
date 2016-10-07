@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 	"time"
+
 	"github.com/acomagu/u-aizu-bot/types"
 )
 
@@ -32,7 +33,7 @@ func rtClass(menber string) [6]string {
 	Thu := time.Date(2016, 5, 12, 0, 0, 0, 0, time.Local)
 	Fre := time.Date(2016, 5, 13, 0, 0, 0, 0, time.Local)
 
-	file, err := ioutil.ReadFile("./json/subjects2.json")
+	file, err := ioutil.ReadFile("./json/jyu2.json")
 	var datasets []person
 	jsonErr := json.Unmarshal(file, &datasets)
 	if err != nil {
@@ -71,6 +72,53 @@ func rtClass(menber string) [6]string {
 	}
 	return T
 }
+
+func serect(menber string, dotw string) [6]string {
+	// Mon := time.Date(2016, 5, 9, 0, 0, 0, 0, time.Local)
+	// Tus := time.Date(2016, 5, 10, 0, 0, 0, 0, time.Local)
+	// Wen := time.Date(2016, 5, 11, 0, 0, 0, 0, time.Local)
+	// Thu := time.Date(2016, 5, 12, 0, 0, 0, 0, time.Local)
+	// Fre := time.Date(2016, 5, 13, 0, 0, 0, 0, time.Local)
+
+	file, err := ioutil.ReadFile("./json/jyu2.json")
+	var datasets []person
+	jsonerr := json.Unmarshal(file, &datasets)
+	if err != nil {
+		fmt.Println("Format Error: ", jsonerr)
+	}
+	var T [6]string
+
+	for k := range datasets {
+		if datasets[k].No == menber {
+			// now := time.Now()
+			if dotw == "月" {
+				T = datasets[k].M
+				break
+			} else if dotw == "火" {
+				T = datasets[k].Tu
+				break
+			} else if dotw == "水" {
+				T = datasets[k].W
+				break
+			} else if dotw == "木" {
+				T = datasets[k].T
+				break
+			} else if dotw == "金" {
+				T = datasets[k].F
+				break
+			} else {
+				break
+			}
+		}
+	}
+	T = chName(T)
+	for f := range T {
+		if T[f] == "" {
+			T[f] = "[あき]"
+		}
+	}
+	return T
+}
 func chName(code [6]string) [6]string {
 	file, err := ioutil.ReadFile("./json/subjects.json")
 	var datasets []namegetter
@@ -91,11 +139,19 @@ func chName(code [6]string) [6]string {
 }
 
 //Timetable ...
-func Timetable(chatroom types.Chatroom) {
+func Timetable(chatroom types.Chatroom) bool {
 	text := <-chatroom.In
+	ans := false
 	if (text[0] == 's') || (text[0] == 'm') {
-		m := rtClass(string(text))
+		text2 := string(text)
+		words := strings.Fields(text2)
+		log.Print(words[1])
+		// m := rtClass(text2)
+		m := serect(words[0], words[1])
 		t := strings.Join(m[:], "\n")
 		chatroom.Out <- types.Message(t)
+		ans = true
+		return ans
 	}
+	return ans
 }
