@@ -77,7 +77,7 @@ func distributeMessage(middleChatroom types.Chatroom) chan types.Chatroom {
 			select {
 			case message := <-middleChatroom.In:
 				if dest == (types.Chatroom{}) {
-					fmt.Println("Error: the destination chatroom in not set.")
+					fmt.Println("Error: the destination chatroom is not set.")
 					break
 				}
 				dest.In <- message
