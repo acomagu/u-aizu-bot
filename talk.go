@@ -37,6 +37,7 @@ func controller(topicChans []TopicChan, changeDestTopicTo chan types.Chatroom, b
 	}
 }
 
+// This pipe stores messages from user with flowing next Chatroom(middleChatroom). And this provides functions, clearPool and broadcastPool. This is used in controller().
 func poolMessages(chatroom types.Chatroom) (types.Chatroom, chan bool, chan bool) {
 	middleChatroom := types.Chatroom{
 		In:  make(chan types.Message),
@@ -67,6 +68,7 @@ func poolMessages(chatroom types.Chatroom) (types.Chatroom, chan bool, chan bool
 	return middleChatroom, clearPool, broadcastPool
 }
 
+// distributeMessage pass message from chatroom to chatroom. The chatroom of destination will change as needed, changed by value of channel, changeDestTopicTo.
 func distributeMessage(middleChatroom types.Chatroom) chan types.Chatroom {
 	changeDestTopicTo := make(chan types.Chatroom)
 
@@ -91,6 +93,7 @@ func distributeMessage(middleChatroom types.Chatroom) chan types.Chatroom {
 	return changeDestTopicTo
 }
 
+// loopTopic just loops topic.
 func loopTopic(topic types.Topic, chatroom types.Chatroom) TopicChan {
 	topicChan := TopicChan{
 		Chatroom: types.Chatroom{
