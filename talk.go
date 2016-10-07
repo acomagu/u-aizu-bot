@@ -26,15 +26,19 @@ func talk(chatroom types.Chatroom) {
 			Return:   ch,
 		})
 	}
-	destTopicChatroom := make(chan types.Chatroom)
-	go controller(chatroom, topicConnections, destTopicChatroom)
-	go passMessage(chatroom, destTopicChatroom)
+	tryTopic := make(chan types.Chatroom)
+	middleChatroom := types.Chatroom{
+		In: make(chan Message),
+		Out: make(chan Message),
+	}
+	go controller(chatroom, topicConnections, tryTopic)
+	go passMessage(middleChatroom, tryTopic)
 }
 
-func controller(chatroom types.Chatroom, topicConnections []TopicConnection, destTopicChatroom chan types.Chatroom) {
+func controller(chatroom types.Chatroom, topicConnections []TopicConnection, tryTopic chan types.Chatroom) {
 	for {
 		for _, topicConnection := range topicConnections {
-			destTopicChatroom <- topicConnection.Chatroom
+			tryTopic <- topicConnection.Chatroom
 			didTalk := <-topicConnection.Return
 			if didTalk {
 				break
@@ -43,14 +47,17 @@ func controller(chatroom types.Chatroom, topicConnections []TopicConnection, des
 	}
 }
 
-func passMessage(chatroom types.Chatroom, destTopicChatroom <-chan types.Chatroom) {
+func passMessage(middleChatroom types.Chatroom, tryTopic <-chan types.Chatroom) {
 	var dest types.Chatroom
 	for {
 		select {
-		case message := <-chatroom.Out:
-			fmt.Println("Error: the destination chatroom in not set.")
+		case message := <-chatroom.In:
+			if dest == (types.Chatroom{}) {
+				fmt.Println("Error: the destination chatroom in not set.")
+				break
+			}
 			dest.In <- message
-		case _dest := <-destTopicChatroom:
+		case _dest := <-tryTopic:
 			dest = _dest
 		}
 	}

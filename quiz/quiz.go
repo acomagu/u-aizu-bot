@@ -1,11 +1,13 @@
 package quiz
 
 import (
+	"fmt"
 	"github.com/acomagu/u-aizu-bot/types"
 )
 
 // Talk method start quiz game with user if sent message means "Quiz".
 func Talk(chatroom types.Chatroom) bool {
+	fmt.Println("QUIZ")
 	text := <-chatroom.In
 	if text != "クイズ" {
 		return false
