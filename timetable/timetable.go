@@ -74,7 +74,7 @@ func rtClass(menber string) [6]string {
 	return T
 }
 func chName(code [6]string) [6]string {
-	file, err := ioutil.ReadFile("./json/subjects2.json")
+	file, err := ioutil.ReadFile("./json/subjects.json")
 	var datasets []namegetter
 	jsonErr := json.Unmarshal(file, &datasets)
 	if err != nil {
@@ -96,7 +96,7 @@ func chName(code [6]string) [6]string {
 func Timetable(chatroom types.Chatroom) {
 	text := <-chatroom.In
 	log.Print(text)
-	log.Println(reflect.TypeOf(1))
+	log.Println(reflect.TypeOf(text))
 	if (text[0] == 's') || (text[0] == 'm') {
 		m := rtClass(string(text))
 		t := strings.Join(m[:], "\n")
