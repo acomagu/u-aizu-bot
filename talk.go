@@ -17,7 +17,7 @@ func talk(chatroom types.Chatroom) {
 	for _, topic := range topics {
 		ch := make(chan bool)
 		topicChatroom := types.Chatroom{
-			In: make(chan types.Message),
+			In:  make(chan types.Message),
 			Out: make(chan types.Message),
 		}
 		go loopTopic(topic, topicChatroom, ch)
