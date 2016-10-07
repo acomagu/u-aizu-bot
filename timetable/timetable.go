@@ -33,7 +33,7 @@ func rtClass(menber string) [6]string {
 	Thu := time.Date(2016, 5, 12, 0, 0, 0, 0, time.Local)
 	Fre := time.Date(2016, 5, 13, 0, 0, 0, 0, time.Local)
 
-	file, err := ioutil.ReadFile("./json/jyu2.json")
+	file, err := ioutil.ReadFile("./json/subjects2.json")
 	var datasets []person
 	jsonErr := json.Unmarshal(file, &datasets)
 	if err != nil {
