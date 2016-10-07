@@ -72,6 +72,7 @@ func rtClass(menber string) [6]string {
 	}
 	return T
 }
+
 func serect(menber string, dotw string) [6]string {
 	// Mon := time.Date(2016, 5, 9, 0, 0, 0, 0, time.Local)
 	// Tus := time.Date(2016, 5, 10, 0, 0, 0, 0, time.Local)
@@ -79,7 +80,7 @@ func serect(menber string, dotw string) [6]string {
 	// Thu := time.Date(2016, 5, 12, 0, 0, 0, 0, time.Local)
 	// Fre := time.Date(2016, 5, 13, 0, 0, 0, 0, time.Local)
 
-	file, err := ioutil.ReadFile("./jyu2.json")
+	file, err := ioutil.ReadFile("./json/jyu2.json")
 	var datasets []person
 	jsonerr := json.Unmarshal(file, &datasets)
 	if err != nil {
