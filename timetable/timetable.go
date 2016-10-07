@@ -143,6 +143,7 @@ func Timetable(chatroom types.Chatroom) {
 	if (text[0] == 's') || (text[0] == 'm') {
 		text2 := string(text)
 		words := strings.Fields(text2)
+		log.Print(words[1])
 		// m := rtClass(text2)
 		m := serect(words[0], words[1])
 		t := strings.Join(m[:], "\n")
