@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"reflect"
 	"strings"
 	"time"
 
@@ -95,6 +96,7 @@ func chName(code [6]string) [6]string {
 func Timetable(chatroom types.Chatroom) {
 	text := <-chatroom.In
 	log.Print(text)
+	log.Println(reflect.TypeOf(1))
 	if (text[0] == 's') || (text[0] == 'm') {
 		m := rtClass(string(text))
 		t := strings.Join(m[:], "\n")
