@@ -6,65 +6,105 @@ import (
 	"github.com/acomagu/u-aizu-bot/types"
 )
 
-// TopicConnection includes chatroom channel, the channel pass the returned value from topic.
-type TopicConnection struct {
+// TopicChan includes chatroom channel, the channel pass the returned value from topic.
+type TopicChan struct {
 	Chatroom types.Chatroom
 	Return   chan bool
 }
 
 func talk(chatroom types.Chatroom) {
-	topicConnections := []TopicConnection{}
+	topicChans := []TopicChan{}
 	for _, topic := range topics {
-		ch := make(chan bool)
-		topicChatroom := types.Chatroom{
-			In:  make(chan types.Message),
-			Out: make(chan types.Message),
-		}
-		go loopTopic(topic, topicChatroom, ch)
-		topicConnections = append(topicConnections, TopicConnection{
-			Chatroom: topicChatroom,
-			Return:   ch,
-		})
+		topicChan := loopTopic(topic, chatroom)
+		topicChans = append(topicChans, topicChan)
 	}
-	tryTopic := make(chan types.Chatroom)
-	middleChatroom := types.Chatroom{
-		In: make(chan Message),
-		Out: make(chan Message),
-	}
-	go controller(chatroom, topicConnections, tryTopic)
-	go passMessage(middleChatroom, tryTopic)
+	middleChatroom, clearPool, broadcastPool := poolMessages(chatroom)
+	changeDestTopicTo := distributeMessage(middleChatroom)
+	go controller(topicChans, changeDestTopicTo, broadcastPool, clearPool)
 }
 
-func controller(chatroom types.Chatroom, topicConnections []TopicConnection, tryTopic chan types.Chatroom) {
+func controller(topicChans []TopicChan, changeDestTopicTo chan types.Chatroom, broadcastPool chan bool, clearPool chan bool) {
 	for {
-		for _, topicConnection := range topicConnections {
-			tryTopic <- topicConnection.Chatroom
-			didTalk := <-topicConnection.Return
+		for _, topicChan := range topicChans {
+			changeDestTopicTo <- topicChan.Chatroom
+			broadcastPool <- true
+			didTalk := <-topicChan.Return
 			if didTalk {
+				clearPool <- true
 				break
 			}
 		}
 	}
 }
 
-func passMessage(middleChatroom types.Chatroom, tryTopic <-chan types.Chatroom) {
-	var dest types.Chatroom
-	for {
-		select {
-		case message := <-chatroom.In:
-			if dest == (types.Chatroom{}) {
-				fmt.Println("Error: the destination chatroom in not set.")
-				break
-			}
-			dest.In <- message
-		case _dest := <-tryTopic:
-			dest = _dest
-		}
+func poolMessages(chatroom types.Chatroom) (types.Chatroom, chan bool, chan bool) {
+	middleChatroom := types.Chatroom{
+		In:  make(chan types.Message),
+		Out: chatroom.Out,
 	}
+	clearPool := make(chan bool)
+	broadcastPool := make(chan bool)
+
+	go func(chatroom types.Chatroom, middleChatroom types.Chatroom, clearPool <-chan bool, broadcastPool <-chan bool) {
+		pool := []types.Message{}
+		for {
+			select {
+			case message := <-chatroom.In:
+				pool = append(pool, message)
+				middleChatroom.In <- message
+
+			case <-clearPool:
+				pool = []types.Message{}
+
+			case <-broadcastPool:
+				for _, message := range pool {
+					middleChatroom.In <- message
+				}
+			}
+		}
+	}(chatroom, middleChatroom, clearPool, broadcastPool)
+
+	return middleChatroom, clearPool, broadcastPool
 }
 
-func loopTopic(topic types.Topic, topicChatroom types.Chatroom, didTalk chan<- bool) {
-	for {
-		didTalk <- topic(topicChatroom)
+func distributeMessage(middleChatroom types.Chatroom) chan types.Chatroom {
+	changeDestTopicTo := make(chan types.Chatroom)
+
+	go func(middleChatroom types.Chatroom, changeDestTopicTo <-chan types.Chatroom) {
+		var dest types.Chatroom
+		dest = <-changeDestTopicTo
+		for {
+			select {
+			case message := <-middleChatroom.In:
+				if dest == (types.Chatroom{}) {
+					fmt.Println("Error: the destination chatroom in not set.")
+					break
+				}
+				dest.In <- message
+
+			case _dest := <-changeDestTopicTo:
+				dest = _dest
+			}
+		}
+	}(middleChatroom, changeDestTopicTo)
+
+	return changeDestTopicTo
+}
+
+func loopTopic(topic types.Topic, chatroom types.Chatroom) TopicChan {
+	topicChan := TopicChan{
+		Chatroom: types.Chatroom{
+			In:  make(chan types.Message),
+			Out: chatroom.Out,
+		},
+		Return: make(chan bool),
 	}
+
+	go func(topic types.Topic, topicChan TopicChan) {
+		for {
+			topicChan.Return <- topic(topicChan.Chatroom)
+		}
+	}(topic, topicChan)
+
+	return topicChan
 }
