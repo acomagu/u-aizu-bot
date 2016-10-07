@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/acomagu/u-aizu-bot/types"
 )
 

@@ -25,15 +25,18 @@ func talk(chatroom types.Chatroom) {
 
 func controller(topicChans []TopicChan, changeDestTopicTo chan types.Chatroom, broadcastPool chan bool, clearPool chan bool) {
 	for {
-		for _, topicChan := range topicChans {
+		for i, topicChan := range topicChans {
 			changeDestTopicTo <- topicChan.Chatroom
-			broadcastPool <- true
+			if(i > 0) {  // for the start time.
+				broadcastPool <- true
+			}
 			didTalk := <-topicChan.Return
 			if didTalk {
 				clearPool <- true
 				break
 			}
 		}
+		clearPool <- true
 	}
 }
 
