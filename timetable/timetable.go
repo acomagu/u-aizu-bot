@@ -134,7 +134,6 @@ func chName(code [6]string) [6]string {
 			}
 		}
 	}
-	fmt.Println(code)
 	return code
 }
 

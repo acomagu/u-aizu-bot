@@ -32,8 +32,6 @@ func listen() {
 }
 
 func handleRequest(w http.ResponseWriter, req *http.Request) {
-	fmt.Println(req.Body)
-
 	received, err := bot.ParseRequest(req)
 	if err != nil {
 		fmt.Println(err)
@@ -48,7 +46,6 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 				fmt.Println(err)
 				continue
 			}
-			fmt.Println(text.Text)
 
 			err = react(types.Message(text.Text), types.UserID(content.From))
 			if err != nil {
