@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 	"time"
+
 	"github.com/acomagu/u-aizu-bot/types"
 )
 
@@ -72,7 +73,7 @@ func rtClass(menber string) [6]string {
 	return T
 }
 func chName(code [6]string) [6]string {
-	file, err := ioutil.ReadFile("./json/subjects.json")
+	file, err := ioutil.ReadFile("./json/jyu2.json")
 	var datasets []namegetter
 	jsonErr := json.Unmarshal(file, &datasets)
 	if err != nil {
@@ -93,6 +94,7 @@ func chName(code [6]string) [6]string {
 //Timetable ...
 func Timetable(chatroom types.Chatroom) {
 	text := <-chatroom.In
+	log.Print(text)
 	if (text[0] == 's') || (text[0] == 'm') {
 		m := rtClass(string(text))
 		t := strings.Join(m[:], "\n")
