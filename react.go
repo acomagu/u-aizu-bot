@@ -17,39 +17,18 @@ func react(text types.Message, userID types.UserID) error {
 			In:  make(chan types.Message),
 			Out: make(chan types.Message),
 		}
-		chatroom = logMessagePipe(chatroom)
 		go sendMessageFromChatroom(chatroom.Out, userID)
 		go talk(chatroom)
 		chatrooms[userID] = chatroom
 	}
 
 	chatroom.In <- text
+	logMessage("->", text)
 	return nil
 }
 
-func logMessagePipe(chatroom types.Chatroom) types.Chatroom {
-	out := types.Chatroom{
-		In:  make(chan types.Message),
-		Out: make(chan types.Message),
-	}
-
-	go func(chatroom types.Chatroom, out types.Chatroom) {
-		select {
-		case text := <-chatroom.In:
-			logMessage("->", text)
-			out.In <- text
-
-		case text := <-chatroom.Out:
-			logMessage("<-", text)
-			out.Out <- text
-		}
-	}(chatroom, out)
-
-	return out
-}
-
 func logMessage(prefix string, text types.Message) {
-	for i, line := range strings.SplitAfter(string(text), "\n") {
+	for i, line := range strings.Split(string(text), "\n") {
 		if i == 0 {
 			fmt.Print(prefix + " ")
 		} else {
@@ -64,6 +43,6 @@ func sendMessageFromChatroom(chatroom <-chan types.Message, userID types.UserID)
 		text := <-chatroom
 		bot.SendText([]string{string(userID)}, string(text))
 
-		fmt.Println("<- " + text)
+		logMessage("<-", text)
 	}
 }
