@@ -144,10 +144,17 @@ func Timetable(chatroom types.Chatroom) {
 	if (text[0] == 's') || (text[0] == 'm') {
 		text2 := string(text)
 		words := strings.Fields(text2)
-		log.Print(words[1])
-		// m := rtClass(text2)
-		m := serect(words[0], words[1])
-		t := strings.Join(m[:], "\n")
-		chatroom.Out <- types.Message(t)
+		wordsSize := len(words)
+		if wordsSize == 1 {
+			m := rtClass(words[0])
+			t := strings.Join(m[:], "\n")
+			chatroom.Out <- types.Message(t)
+		} else {
+			m := serect(words[0], words[1])
+			t := strings.Join(m[:], "\n")
+			chatroom.Out <- types.Message(t)
+		}
+		// t := strings.Join(m[:], "\n")
+		// chatroom.Out <- types.Message(t)
 	}
 }
