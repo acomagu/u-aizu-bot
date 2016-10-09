@@ -11,16 +11,21 @@ func Talk(chatroom types.Chatroom) {
 		return
 	}
 	qa := oneQA()
-	for _, message := range qa.question {
-		chatroom.Out <- message
-	}
+	chatroom.Out <- qa.question
+	// for _, message := range qa.question {
+	// 	chatroom.Out <- message
+	// }
 
 	text = <-chatroom.In
+	var messages []types.Message
+
 	if isCorrectAnswer(text, qa) {
-		chatroom.Out <- "なんで知ってるの...?"
+		messages = append(messages,"なんで知ってるの...?")
+		chatroom.Out <- messages
 	} else {
-		chatroom.Out <- "やーいやーーいwwwwwwwwwwwwwwwwwww"
-		chatroom.Out <- types.Message("せぃかぃゎ" + qa.answer)
+		messages = append(messages,"やーいやーーいwwwwwwwwwwwwwwwwwww")
+		messages = append(messages,types.Message("せぃかぃゎ" + qa.answer))
+		chatroom.Out <- messages
 	}
 }
 

@@ -1,11 +1,15 @@
 {
 	"ImportPath": "github.com/acomagu/u-aizu-bot",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v74",
+	"GodepVersion": "v63",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/line/line-bot-sdk-go/linebot",
-			"Rev": "8635ae812e60724b61ee9f0f9d9bf5c43a49f306"
+			"Comment": "1.0.0-21-g7de5817",
+			"Rev": "7de5817af0beb177af416ed4bb48cca4248b8849"
 		}
 	]
 }

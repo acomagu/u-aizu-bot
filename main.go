@@ -6,7 +6,8 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 	"net/http"
 	"os"
-	"strconv"
+	// "reflect"
+	// "strconv"
 )
 
 var bot *linebot.Client
@@ -33,26 +34,23 @@ func listen() {
 func handleRequest(w http.ResponseWriter, req *http.Request) {
 	fmt.Println(req.Body)
 
-	received, err := bot.ParseRequest(req)
+	events, err := bot.ParseRequest(req)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	for _, result := range received.Results {
-		content := result.Content()
-		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText {
-			text, err := content.TextContent()
-			if err != nil {
-				fmt.Println(err)
-				continue
+	for _, event := range events {
+		text := ""
+		if  event != nil && event.Type == linebot.EventTypeMessage{
+			switch message := event.Message.(type) {
+			case *linebot.TextMessage:
+				text = message.Text
 			}
-			fmt.Println(text.Text)
-
-			err = react(types.Message(text.Text), types.UserID(content.From))
-			if err != nil {
-				fmt.Println(err)
-			}
+		}
+		err = react(event.ReplyToken,types.Message(text), types.UserID(event.Source.UserID))
+		if err != nil {
+			fmt.Println(err)
 		}
 	}
 }
@@ -64,12 +62,11 @@ func configProxy() {
 }
 
 func lineClient() (*linebot.Client, error) {
-	lineChannelID, err := strconv.Atoi(os.Getenv("LINE_CHANNEL_ID"))
-	if err != nil {
-		return nil, err
-	}
-	lineChannelSecret := os.Getenv("LINE_CHANNEL_SECRET")
-	lineMID := os.Getenv("LINE_MID")
-	bot, err := linebot.NewClient(int64(lineChannelID), lineChannelSecret, lineMID)
+
+		lineChannelSecret := os.Getenv("LINE_CHANNEL_SECRET")
+		lineChannelAccessToken := os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
+
+		bot,err := linebot.New(lineChannelSecret,lineChannelAccessToken)
+
 	return bot, err
 }

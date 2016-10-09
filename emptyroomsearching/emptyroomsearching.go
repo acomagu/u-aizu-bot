@@ -73,6 +73,8 @@ func Emptyroomsearching(chatroom types.Chatroom) {
 	if text[0] == ':' {
 		m := rtRoom(string(text))
 		t := strings.Join(m[:], "\n")
-		chatroom.Out <- types.Message(t)
+		var s []types.Message
+		s = append(s,types.Message(t))
+		chatroom.Out <- s
 	}
 }

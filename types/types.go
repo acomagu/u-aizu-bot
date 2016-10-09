@@ -9,5 +9,5 @@ type UserID string
 // Chatroom type keeps the connections to user.
 type Chatroom struct {
 	In  chan Message
-	Out chan Message
+	Out chan []Message
 }

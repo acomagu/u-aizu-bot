@@ -148,6 +148,8 @@ func Timetable(chatroom types.Chatroom) {
 		// m := rtClass(text2)
 		m := serect(words[0], words[1])
 		t := strings.Join(m[:], "\n")
-		chatroom.Out <- types.Message(t)
+		var s []types.Message
+		s = append(s,types.Message(t))
+		chatroom.Out <- s
 	}
 }
