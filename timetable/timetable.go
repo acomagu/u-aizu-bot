@@ -134,16 +134,17 @@ func chName(code [6]string) [6]string {
 			}
 		}
 	}
-	fmt.Println(code)
 	return code
 }
 
 //Timetable ...
-func Timetable(chatroom types.Chatroom) {
+func Timetable(chatroom types.Chatroom) bool {
 	text := <-chatroom.In
+	ans := false
 	if (text[0] == 's') || (text[0] == 'm') {
 		text2 := string(text)
 		words := strings.Fields(text2)
+<<<<<<< HEAD
 		wordsSize := len(words)
 		if wordsSize == 1 {
 			m := rtClass(words[0])
@@ -156,5 +157,15 @@ func Timetable(chatroom types.Chatroom) {
 		}
 		// t := strings.Join(m[:], "\n")
 		// chatroom.Out <- types.Message(t)
+=======
+		log.Print(words[1])
+		// m := rtClass(text2)
+		m := serect(words[0], words[1])
+		t := strings.Join(m[:], "\n")
+		chatroom.Out <- types.Message(t)
+		ans = true
+		return ans
+>>>>>>> 31f8ab711a20040407cebb8e888938cd4add473e
 	}
+	return ans
 }
