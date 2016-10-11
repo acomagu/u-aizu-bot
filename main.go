@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/acomagu/u-aizu-bot/types"
-	"github.com/line/line-bot-sdk-go/linebot"
 	"net/http"
 	"os"
-	// "reflect"
-	// "strconv"
+	
+	"github.com/line/line-bot-sdk-go/linebot"
+	"github.com/acomagu/u-aizu-bot/types"
 )
 
 var bot *linebot.Client
@@ -32,8 +31,6 @@ func listen() {
 }
 
 func handleRequest(w http.ResponseWriter, req *http.Request) {
-	fmt.Println(req.Body)
-
 	events, err := bot.ParseRequest(req)
 	if err != nil {
 		fmt.Println(err)

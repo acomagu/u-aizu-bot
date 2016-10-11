@@ -5,10 +5,10 @@ import (
 )
 
 // Talk method start quiz game with user if sent message means "Quiz".
-func Talk(chatroom types.Chatroom) {
+func Talk(chatroom types.Chatroom) bool {
 	text := <-chatroom.In
 	if text != "クイズ" {
-		return
+		return false
 	}
 	qa := oneQA()
 	chatroom.Out <- qa.question
@@ -27,6 +27,7 @@ func Talk(chatroom types.Chatroom) {
 		messages = append(messages,types.Message("せぃかぃゎ" + qa.answer))
 		chatroom.Out <- messages
 	}
+	return true
 }
 
 func isCorrectAnswer(text types.Message, qa QA) bool {
