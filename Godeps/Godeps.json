@@ -1,15 +1,20 @@
 {
 	"ImportPath": "github.com/acomagu/u-aizu-bot",
-	"GoVersion": "go1.6",
-	"GodepVersion": "v63",
-	"Packages": [
-		"./..."
-	],
+	"GoVersion": "go1.7",
+	"GodepVersion": "v75",
 	"Deps": [
 		{
 			"ImportPath": "github.com/line/line-bot-sdk-go/linebot",
 			"Comment": "1.0.0-21-g7de5817",
 			"Rev": "7de5817af0beb177af416ed4bb48cca4248b8849"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "f841c39de738b1d0df95b5a7187744f0e03d8112"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context/ctxhttp",
+			"Rev": "f841c39de738b1d0df95b5a7187744f0e03d8112"
 		}
 	]
 }
