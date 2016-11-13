@@ -27,7 +27,7 @@ func controller(topicChans []TopicChan, changeDestTopicTo chan types.Chatroom, b
 	for {
 		for i, topicChan := range topicChans {
 			changeDestTopicTo <- topicChan.Chatroom
-			if(i > 0) {  // for the start time.
+			if i > 0 { // for the start time.
 				broadcastPool <- true
 			}
 			didTalk := <-topicChan.Return
@@ -43,8 +43,8 @@ func controller(topicChans []TopicChan, changeDestTopicTo chan types.Chatroom, b
 // This pipe stores messages from user with flowing next Chatroom(middleChatroom). And this provides functions, clearPool and broadcastPool. This is used in controller().
 func poolMessages(chatroom types.Chatroom) (types.Chatroom, chan bool, chan bool) {
 	middleChatroom := types.Chatroom{
-		In:  make(chan types.Message),
-		Out: chatroom.Out,
+		In:    make(chan types.Message),
+		Out:   chatroom.Out,
 		Token: chatroom.Token,
 	}
 	clearPool := make(chan bool)
@@ -101,8 +101,8 @@ func distributeMessage(middleChatroom types.Chatroom) chan types.Chatroom {
 func loopTopic(topic types.Topic, chatroom types.Chatroom) TopicChan {
 	topicChan := TopicChan{
 		Chatroom: types.Chatroom{
-			In:  make(chan types.Message),
-			Out: chatroom.Out,
+			In:    make(chan types.Message),
+			Out:   chatroom.Out,
 			Token: chatroom.Token,
 		},
 		Return: make(chan bool),

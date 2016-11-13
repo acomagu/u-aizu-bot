@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	
-	"github.com/line/line-bot-sdk-go/linebot"
+
 	"github.com/acomagu/u-aizu-bot/types"
+	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 var bot *linebot.Client
@@ -39,13 +39,13 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 
 	for _, event := range events {
 		text := ""
-		if  event != nil && event.Type == linebot.EventTypeMessage{
+		if event != nil && event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
 				text = message.Text
 			}
 		}
-		err = react(event.ReplyToken,types.Message(text), types.UserID(event.Source.UserID))
+		err = react(event.ReplyToken, types.Message(text), types.UserID(event.Source.UserID))
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -60,10 +60,10 @@ func configProxy() {
 
 func lineClient() (*linebot.Client, error) {
 
-		lineChannelSecret := os.Getenv("LINE_CHANNEL_SECRET")
-		lineChannelAccessToken := os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
+	lineChannelSecret := os.Getenv("LINE_CHANNEL_SECRET")
+	lineChannelAccessToken := os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
 
-		bot,err := linebot.New(lineChannelSecret,lineChannelAccessToken)
+	bot, err := linebot.New(lineChannelSecret, lineChannelAccessToken)
 
 	return bot, err
 }
