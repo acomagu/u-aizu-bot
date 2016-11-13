@@ -13,7 +13,6 @@ type ReplyToken string
 type Chatroom struct {
 	In  chan Message
 	Out chan []Message
-	Token chan ReplyToken
 }
 
 // IsTalked express whether the topic talked to user or not. If the value is false, the framework will try another topic.

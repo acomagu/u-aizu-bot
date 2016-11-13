@@ -9,22 +9,28 @@ import (
 )
 
 var chatrooms = make(map[types.UserID]types.Chatroom)
+var replyTokenChans = make(map[types.UserID]chan types.ReplyToken)
 
 // react is runned synchronously
 func react(token string, text types.Message, userID types.UserID) error {
+	chatroom, ok1 := chatrooms[userID]
+	replyTokenChan, ok2 := replyTokenChans[userID]
 
-	chatroom, ok := chatrooms[userID]
-	if !ok {
+	// When receive message from new user
+	if !ok1 || !ok2 {
 		chatroom = types.Chatroom{
-			In:    make(chan types.Message),
-			Out:   make(chan []types.Message),
-			Token: make(chan types.ReplyToken),
+			In:  make(chan types.Message),
+			Out: make(chan []types.Message),
 		}
-		go sendMessageFromChatroom(chatroom.Token, chatroom.Out)
+		replyTokenChan = make(chan types.ReplyToken)
+
+		go sendMessageFromChatroom(replyTokenChan, chatroom.Out)
 		go talk(chatroom)
 		chatrooms[userID] = chatroom
+		replyTokenChans[userID] = replyTokenChan
 	}
-	chatroom.Token <- types.ReplyToken(token)
+
+	replyTokenChan <- types.ReplyToken(token)
 	chatroom.In <- text
 	logMessage("->", text)
 	return nil

@@ -59,7 +59,6 @@ func configProxy() {
 }
 
 func lineClient() (*linebot.Client, error) {
-
 	lineChannelSecret := os.Getenv("LINE_CHANNEL_SECRET")
 	lineChannelAccessToken := os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
 
