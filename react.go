@@ -11,7 +11,7 @@ import (
 var chatrooms = make(map[types.UserID]types.Chatroom)
 var replyTokenChans = make(map[types.UserID]chan types.ReplyToken)
 
-// react is runned synchronously
+// react is passed each message initialy. This is runned synchronously.
 func react(token string, text types.Message, userID types.UserID) error {
 	chatroom, ok1 := chatrooms[userID]
 	replyTokenChan, ok2 := replyTokenChans[userID]
