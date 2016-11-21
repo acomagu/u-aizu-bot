@@ -32,8 +32,37 @@ func react(token string, text types.Message, userID types.UserID) error {
 
 	replyTokenChan <- types.ReplyToken(token)
 	chatroom.In <- text
-	logMessage("->", text)
+
+	logReceiving(text)
 	return nil
+}
+
+func sendMessageFromChatroom(token <-chan types.ReplyToken, chatroom <-chan []types.Message) {
+	for {
+		// Receive this token when receive message by LINE.
+		replytoken := <-token
+
+		texts := <-chatroom
+		var s []linebot.Message
+		for _, text := range texts {
+			s = append(s, linebot.NewTextMessage(string(text)))
+		}
+		if _, err := bot.ReplyMessage(string(replytoken), s...).Do(); err != nil {
+			fmt.Println(err)
+		}
+
+		logSending(texts)
+	}
+}
+
+func logSending(texts []types.Message) {
+	for _, text := range texts {
+		logMessage("<-", text)
+	}
+}
+
+func logReceiving(text types.Message) {
+	logMessage("->", text)
 }
 
 func logMessage(prefix string, text types.Message) {
@@ -44,20 +73,5 @@ func logMessage(prefix string, text types.Message) {
 			fmt.Print(".. ")
 		}
 		fmt.Println(line)
-	}
-}
-
-func sendMessageFromChatroom(token <-chan types.ReplyToken, chatroom <-chan []types.Message) {
-	for {
-		replytoken := <-token
-		text := <-chatroom
-		var s []linebot.Message
-		for _, content := range text {
-			s = append(s, linebot.NewTextMessage(string(content)))
-			logMessage("<-", content)
-		}
-		if _, err := bot.ReplyMessage(string(replytoken), s...).Do(); err != nil {
-			fmt.Println(err)
-		}
 	}
 }
