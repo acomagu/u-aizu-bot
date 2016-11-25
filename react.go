@@ -8,11 +8,14 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
+// ReplyToken type is used for Reply-Token of line.(This value is essential for sending message to user by LINE.)
+type ReplyToken string
+
 var chatrooms = make(map[types.UserID]types.Chatroom)
-var replyTokenChans = make(map[types.UserID]chan types.ReplyToken)
+var replyTokenChans = make(map[types.UserID]chan ReplyToken)
 
 // react is passed each message initialy. This is runned synchronously.
-func react(token string, text types.Message, userID types.UserID) error {
+func react(token ReplyToken, text types.Message, userID types.UserID) error {
 	chatroom, ok1 := chatrooms[userID]
 	replyTokenChan, ok2 := replyTokenChans[userID]
 
@@ -22,7 +25,7 @@ func react(token string, text types.Message, userID types.UserID) error {
 			In:  make(chan types.Message),
 			Out: make(chan []types.Message),
 		}
-		replyTokenChan = make(chan types.ReplyToken)
+		replyTokenChan = make(chan ReplyToken)
 
 		go sendMessageFromChatroom(replyTokenChan, chatroom.Out)
 		go talk(chatroom)
@@ -30,14 +33,14 @@ func react(token string, text types.Message, userID types.UserID) error {
 		replyTokenChans[userID] = replyTokenChan
 	}
 
-	replyTokenChan <- types.ReplyToken(token)
+	replyTokenChan <- ReplyToken(token)
 	chatroom.In <- text
 
 	logReceiving(text)
 	return nil
 }
 
-func sendMessageFromChatroom(token <-chan types.ReplyToken, chatroom <-chan []types.Message) {
+func sendMessageFromChatroom(token <-chan ReplyToken, chatroom <-chan []types.Message) {
 	for {
 		// Receive this token when receive message by LINE.
 		replytoken := <-token

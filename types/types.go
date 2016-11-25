@@ -6,9 +6,6 @@ type Message string
 // UserID type express a ID of opponent or me in chat.
 type UserID string
 
-// ReplyToken type is used for Reply-Token of line.(This value is essential for sending message to user by LINE.)
-type ReplyToken string
-
 // Chatroom type keeps the connections to user.
 type Chatroom struct {
 	In  chan Message

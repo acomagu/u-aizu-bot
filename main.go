@@ -45,7 +45,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 				text = message.Text
 			}
 		}
-		err = react(event.ReplyToken, types.Message(text), types.UserID(event.Source.UserID))
+		err = react(ReplyToken(event.ReplyToken), types.Message(text), types.UserID(event.Source.UserID))
 		if err != nil {
 			fmt.Println(err)
 		}
