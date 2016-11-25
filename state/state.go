@@ -6,4 +6,10 @@ import (
 	"github.com/acomagu/u-aizu-bot/types"
 )
 
-func 
+type State struct {
+	didVerified bool
+}
+
+var states := make(map[types.UserID]State)
+
+func getStates() {}
