@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"errors"
 
 	"github.com/acomagu/u-aizu-bot/types"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -16,6 +17,9 @@ var replyTokenChans = make(map[types.UserID]chan ReplyToken)
 
 // react is passed each message initialy. This is runned synchronously.
 func react(token ReplyToken, text types.Message, userID types.UserID) error {
+	if text == "" {
+		return errors.New("react: Received empty message")
+	}
 	chatroom, ok1 := chatrooms[userID]
 	replyTokenChan, ok2 := replyTokenChans[userID]
 
