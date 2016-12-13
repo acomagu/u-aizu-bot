@@ -23,7 +23,7 @@ func react(token ReplyToken, text types.Message, userID types.UserID) error {
 	chatroom, ok1 := chatrooms[userID]
 	replyTokenChan, ok2 := replyTokenChans[userID]
 
-	// When receive message from new user
+	// When receive message from NEW user
 	if !ok1 || !ok2 {
 		chatroom = types.Chatroom{
 			In:  make(chan types.Message),
