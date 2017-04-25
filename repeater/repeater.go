@@ -1,11 +1,11 @@
 package repeater
 
 import (
-	"github.com/acomagu/u-aizu-bot/types"
+	"github.com/acomagu/u-aizu-bot/chatrooms"
 )
 
 // Talk is main func, just repeat.
-func Talk(chatroom types.Chatroom) bool {
-	chatroom.Out <- []types.Message{<-chatroom.In}
+func Talk(chatroom chatrooms.Room) bool {
+	chatroom.Out <- []chatrooms.Message{<-chatroom.In}
 	return true
 }

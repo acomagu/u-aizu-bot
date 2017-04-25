@@ -3,48 +3,64 @@ package main
 import (
 	"fmt"
 	"strings"
-	"errors"
 
-	"github.com/acomagu/u-aizu-bot/types"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"github.com/acomagu/u-aizu-bot/chatrooms"
+	"github.com/acomagu/u-aizu-bot/emptyroomsearching"
+	"github.com/acomagu/u-aizu-bot/quiz"
+	"github.com/acomagu/u-aizu-bot/timetable"
+	"github.com/acomagu/u-aizu-bot/repeater"
 )
 
 // ReplyToken type is used for Reply-Token of line.(This value is essential for sending message to user by LINE.)
 type ReplyToken string
 
-var chatrooms = make(map[types.UserID]types.Chatroom)
-var replyTokenChans = make(map[types.UserID]chan ReplyToken)
+type User struct {
+	Cr chatrooms.Chatrooms
+	ReplyTokenChan chan ReplyToken
+	Name string
+}
 
-// react is passed each message initialy. This is runned synchronously.
-func react(token ReplyToken, text types.Message, userID types.UserID) error {
-	if text == "" {
-		return errors.New("react: Received empty message")
-	}
-	chatroom, ok1 := chatrooms[userID]
-	replyTokenChan, ok2 := replyTokenChans[userID]
+var users = make(map[UserID]User)
 
-	// When receive message from NEW user
-	if !ok1 || !ok2 {
-		chatroom = types.Chatroom{
-			In:  make(chan types.Message),
-			Out: make(chan []types.Message),
+var replyTokenChans = make(map[UserID]chan ReplyToken)
+
+func react(token ReplyToken, text chatrooms.Message, userID UserID) error {
+	user, ok := users[userID]
+
+	if !ok {
+		user = User{
+			Cr: chatrooms.New([]chatrooms.Topic{
+				// user.returnName,
+				emptyroomsearching.Emptyroomsearching,
+				timetable.Timetable,
+				quiz.Talk,
+				repeater.Talk,
+			}),
+			ReplyTokenChan: make(chan ReplyToken),
+			Name: "aaa",
 		}
-		replyTokenChan = make(chan ReplyToken)
+		users[userID] = user
 
-		go sendMessageFromChatroom(replyTokenChan, chatroom.Out)
-		go talk(chatroom)
-		chatrooms[userID] = chatroom
-		replyTokenChans[userID] = replyTokenChan
+		go sendMessageFromChatroom(user.ReplyTokenChan, user.Cr.Entry.Out)
 	}
+	user.ReplyTokenChan <- ReplyToken(token)
 
-	replyTokenChan <- ReplyToken(token)
-	chatroom.In <- text
+	user.Cr.Entry.In <- text
 
 	logReceiving(text)
+
 	return nil
 }
 
-func sendMessageFromChatroom(token <-chan ReplyToken, chatroom <-chan []types.Message) {
+func (user *User) returnName(cr chatrooms.Room) bool {
+	_ = <-cr.In
+	cr.Out <- []chatrooms.Message{chatrooms.Message(user.Name)}
+	fmt.Printf("%+v\n", user)
+	return true
+}
+
+func sendMessageFromChatroom(token <-chan ReplyToken, chatroom <-chan []chatrooms.Message) {
 	for {
 		// Receive this token when receive message by LINE.
 		replytoken := <-token
@@ -62,17 +78,17 @@ func sendMessageFromChatroom(token <-chan ReplyToken, chatroom <-chan []types.Me
 	}
 }
 
-func logSending(texts []types.Message) {
+func logSending(texts []chatrooms.Message) {
 	for _, text := range texts {
 		logMessage("<-", text)
 	}
 }
 
-func logReceiving(text types.Message) {
+func logReceiving(text chatrooms.Message) {
 	logMessage("->", text)
 }
 
-func logMessage(prefix string, text types.Message) {
+func logMessage(prefix string, text chatrooms.Message) {
 	for i, line := range strings.Split(string(text), "\n") {
 		if i == 0 {
 			fmt.Print(prefix + " ")

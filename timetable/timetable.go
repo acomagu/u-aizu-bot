@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/acomagu/u-aizu-bot/types"
+	"github.com/acomagu/u-aizu-bot/chatrooms"
 )
 
 type namegetter struct {
@@ -138,10 +138,10 @@ func chName(code [6]string) [6]string {
 }
 
 //Timetable ...
-func Timetable(chatroom types.Chatroom) bool {
+func Timetable(chatroom chatrooms.Room) bool {
 	text := <-chatroom.In
 	ans := false
-	var s []types.Message
+	var s []chatrooms.Message
 	if (text[0] == 's') || (text[0] == 'm') {
 		text2 := string(text)
 		words := strings.Fields(text2)
@@ -149,16 +149,16 @@ func Timetable(chatroom types.Chatroom) bool {
 		if wordsSize == 1 {
 			m := rtClass(words[0])
 			t := strings.Join(m[:], "\n")
-			s = append(s,types.Message(t))
+			s = append(s,chatrooms.Message(t))
 			chatroom.Out <- s
 		} else {
 			m := serect(words[0], words[1])
 			t := strings.Join(m[:], "\n")
-			s = append(s,types.Message(t))
+			s = append(s,chatrooms.Message(t))
 			chatroom.Out <- s
 		}
 		// t := strings.Join(m[:], "\n")
-		// chatroom.Out <- types.Message(t)
+		// chatroom.Out <- chatrooms.Message(t)
 		ans = true
 		return ans
 	}

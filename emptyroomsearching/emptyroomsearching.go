@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/acomagu/u-aizu-bot/types"
+	"github.com/acomagu/u-aizu-bot/chatrooms"
 )
 
 type person struct {
@@ -68,15 +68,15 @@ func rtRoom(menber string) [6]string {
 }
 
 // Emptyroomsearching :教室名でその日に空いている状況が帰ってくる
-func Emptyroomsearching(chatroom types.Chatroom) bool {
+func Emptyroomsearching(chatroom chatrooms.Room) bool {
 	text := <-chatroom.In
 	if text[0] != ':' {
 		return false
 	}
 	m := rtRoom(string(text))
 	t := strings.Join(m[:], "\n")
-	var s []types.Message
-	s = append(s,types.Message(t))
+	var s []chatrooms.Message
+	s = append(s, chatrooms.Message(t))
 	chatroom.Out <- s
 	return true
 }

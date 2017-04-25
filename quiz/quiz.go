@@ -1,11 +1,11 @@
 package quiz
 
 import (
-	"github.com/acomagu/u-aizu-bot/types"
+	"github.com/acomagu/u-aizu-bot/chatrooms"
 )
 
 // Talk method start quiz game with user if sent message means "Quiz".
-func Talk(chatroom types.Chatroom) bool {
+func Talk(chatroom chatrooms.Room) bool {
 	text := <-chatroom.In
 	if text != "クイズ" {
 		return false
@@ -17,19 +17,19 @@ func Talk(chatroom types.Chatroom) bool {
 	// }
 
 	text = <-chatroom.In
-	var messages []types.Message
+	var messages []chatrooms.Message
 
 	if isCorrectAnswer(text, qa) {
 		messages = append(messages,"なんで知ってるの...?")
 		chatroom.Out <- messages
 	} else {
 		messages = append(messages,"やーいやーーいwwwwwwwwwwwwwwwwwww")
-		messages = append(messages,types.Message("せぃかぃゎ" + qa.answer))
+		messages = append(messages,chatrooms.Message("せぃかぃゎ" + qa.answer))
 		chatroom.Out <- messages
 	}
 	return true
 }
 
-func isCorrectAnswer(text types.Message, qa QA) bool {
-	return text == types.Message(qa.answer)
+func isCorrectAnswer(text chatrooms.Message, qa QA) bool {
+	return text == chatrooms.Message(qa.answer)
 }

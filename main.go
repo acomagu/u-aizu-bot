@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/acomagu/u-aizu-bot/types"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"github.com/acomagu/u-aizu-bot/chatroom"
 )
+
+type UserID string
 
 var bot *linebot.Client
 
@@ -45,7 +47,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 				text = message.Text
 			}
 		}
-		err = react(ReplyToken(event.ReplyToken), types.Message(text), types.UserID(event.Source.UserID))
+		err = react(ReplyToken(event.ReplyToken), chatrooms.Message(text), UserID(event.Source.UserID))
 		if err != nil {
 			fmt.Println(err)
 		}

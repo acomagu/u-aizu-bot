@@ -2,18 +2,18 @@ package quiz
 
 import (
 	"math/rand"
-	"github.com/acomagu/u-aizu-bot/types"
+	"github.com/acomagu/u-aizu-bot/chatrooms"
 )
 
 // QA struct enclose the question and the answer.
 type QA struct {
-	question []types.Message
+	question []chatrooms.Message
 	answer   string
 }
 
 var qas = []QA{
 	QA{
-		question: []types.Message{
+		question: []chatrooms.Message{
 			"もんだぃ。ゎたしゎなんさぃ?",
 			"1. 14さぃ",
 			"2. 24さぃ",
@@ -22,7 +22,7 @@ var qas = []QA{
 		answer: "3",
 	},
 	QA{
-		question: []types.Message{
+		question: []chatrooms.Message{
 			"こんにちは。僕のラッキーカラーは何でしょう?",
 			"1. Blue",
 			"2. イエロー☆",
@@ -31,7 +31,7 @@ var qas = []QA{
 		answer: "1",
 	},
 	QA{
-		question: []types.Message{
+		question: []chatrooms.Message{
 			"やっほー",
 			"1. うっほー",
 			"2. ごっほー",
